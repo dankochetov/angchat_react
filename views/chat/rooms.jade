@@ -1,0 +1,21 @@
+include ../loading
+
+.panel-body(ng-if='rooms.length==0', ng-init='$root.title = " - Rooms"')
+	div.text-center(ng-if='!loading') No rooms yet. 
+		btn.btn.btn-default(ng-click='template.go("/chat/createroom")') Create room
+	.row: .col-xs-offset-6: div.text-center(ng-if='loading')
+		+loading('black')
+table.table.table-bordered.table-hover.table-responsive#roomsList(ng-show='rooms.length>0')
+	tr.info
+		th.col-xs-3 Name
+		th.col-xs-6 Description
+		th.col-xs-2 Owner
+		th.col-xs-1 Online
+	tr(ng-repeat='room in rooms | orderBy: "-online"', ng-click='openTab(room._id)', action-on-finish)
+		td {{room.name}} 
+			.glyphicon.glyphicon-lock(ng-show='room.protect', data-toggle='tooltip', title='This room is protected with password')
+		td
+			span(ng-if='room.description!=""') {{room.description}}
+			span(ng-if='room.description==""'): i No description
+		td(ng-init='getUser(room.owner)') {{users[room.owner].username}}
+		td.text-center {{room.online}}

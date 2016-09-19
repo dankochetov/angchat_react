@@ -1,4 +1,4 @@
-require('coffee-script')
+require 'coffee-script'
 
 express = require 'express'
 router = express.Router()

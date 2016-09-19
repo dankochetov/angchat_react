@@ -7,52 +7,55 @@ module.exports = (grunt)->
 				options:
 					shorthandCompacting: false
 					roundingPrecision: -1
-				src: ['public/stylesheets/*.css', '!public/stylesheets/all.css']
-				dest: 'public/stylesheets/all.css'
+				src: ['public/css/*.css', '!public/css/all.css']
+				dest: 'public/css/all.css'
 				
-		coffee:
-			compile:
-				expand: true
-				cwd: 'public/coffee'
-				src: '**/*.coffee'
-				dest: 'public/javascripts/compiled'
-				ext: '.js'
-				flatten: true
+		babel:
+			react:
 				options:
-					bare: true
+					presets: ['react']
+				files: [
+					expand: true
+					cwd: 'public/jsx/'
+					src: '**/*.jsx'
+					dest: 'public/js/compiled'
+					ext: '.js'
+				]
+
+		browserify:
+			react:
+				files:
+					'public/js/App.js': 'public/js/compiled/App.js'
 		
 		uglify:
 			minify:
-				src: 'public/javascripts/compiled/*.js'
-				dest: 'public/javascripts/all.js'
+				src: 'public/js/compiled/*.js'
+				dest: 'public/js/all.js'
 				options:
 					bare: true
 		
 		concat:
 			addSource:
-				src: ['public/javascripts/source/*.js', 'public/javascripts/all.js']
-				dest: 'public/javascripts/all.js'
+				src: ['public/js/source/*.js', 'public/js/all.js']
+				dest: 'public/js/all.js'
 				options:
 					bare: true
 			full:
-				src: ['public/javascripts/source/*.js', 'public/javascripts/compiled/*.js']
-				dest: 'public/javascripts/all.js'
+				src: ['public/js/source/*.js', 'public/js/compiled/*.js']
+				dest: 'public/js/all.js'
 				options:
 					bare: true
 
-		clean: ['public/javascripts/compiled']
+		clean: ['public/js/compiled']
 
 		watch:
 			self:
 				files: ['Gruntfile.coffee']
-			coffee:
-				files: ['public/**/*.coffee']
-				tasks: ['js']
 			js:
-				files: ['public/**/*.js', '!public/javascripts/compiled/*.js', '!public/javascripts/all.js']
+				files: ['public/**/*.jsx', '!public/js/compiled/*.js', '!public/js/all.js']
 				tasks: ['js']
 			css:
-				files: ['public/stylesheets/**/*.css', '!public/stylesheets/all.css']
+				files: ['public/css/**/*.css', '!public/css/all.css']
 				tasks: ['css']
 
 	grunt.loadNpmTasks 'grunt-contrib-coffee'
@@ -61,6 +64,8 @@ module.exports = (grunt)->
 	grunt.loadNpmTasks 'grunt-contrib-concat'
 	grunt.loadNpmTasks 'grunt-contrib-cssmin'
 	grunt.loadNpmTasks 'grunt-contrib-watch'
-	grunt.registerTask 'default', ['cssmin', 'coffee', 'uglify', 'concat:addSource', 'clean']
-	grunt.registerTask 'js', ['coffee', 'concat:full', 'clean']
+	grunt.loadNpmTasks 'grunt-babel'
+	grunt.loadNpmTasks 'grunt-browserify'
+	grunt.registerTask 'default', ['cssmin', 'babel', 'browserify', 'clean']
+	grunt.registerTask 'js', ['babel', 'browserify', 'clean']
 	grunt.registerTask 'css', 'cssmin'

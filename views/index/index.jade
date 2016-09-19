@@ -1,4 +1,5 @@
-extends layout
+extends ../layout
+include ../loading
 
-block content2
-	ng-include(ng-init='template.init("/index")', src='template.url()', ng-controller='includeCtrl')
+block content
+	div#app
